@@ -21,7 +21,7 @@ class Student(object):
 		self.firstName = random.choice(nameData['firstNames'])
 		self.lastName = random.choice(nameData['lastNames'])
 		self.name = u'{} {}'.format(self.firstName, self.lastName)
-		self.email = u'{}.{}@myschool.edu'.format(self.firstName.lower(), self.lastName.lower())
+		self.email = u'{}.{}@primavera.edu'.format(self.firstName.lower(), self.lastName.lower())
 
 		self.average = average
 
@@ -131,7 +131,7 @@ def genStatement(c, student, verb, activity, time, score=None):
 			'display': {'en-US': verb}
 		},
 		'object': {
-			'id': 'http://myschool.edu/xapi/{}/{}'.format(c.id,activity),
+			'id': 'http://strongmindTech.edu/xapi/{}/{}'.format(c.id,activity),
 			'definition': {
 				"type": "http://adlnet.gov/expapi/activities/assessment",
         		"name": {"en-US": activity}
@@ -144,12 +144,12 @@ def genStatement(c, student, verb, activity, time, score=None):
 				'mbox': 'mailto:'+c.instructor.email
 			},
 			'contextActivities': {
-				'grouping': [{'id': 'http://myschool.edu/xapi/'+c.id}]
+				'grouping': [{'id': 'http://strongmindTech.edu/xapi/'+c.id}]
 			}
 		},
 
 		'authority': {
-			'mbox': 'mailto:admin@myschool.edu',
+			'mbox': 'mailto:admin@strongmindTech.edu',
 			'objectType': 'Agent'
 		},
 		'timestamp': time.isoformat(),
@@ -160,7 +160,7 @@ def genStatement(c, student, verb, activity, time, score=None):
 
 	if verb == 'answered':
 		stmt['context']['contextActivities']['parent'] = [{
-			'id': 'http://myschool.edu/xapi/{}/{}'.format(c.id, activity.split('/')[0])
+			'id': 'http://strongmindTech.edu/xapi/{}/{}'.format(c.id, activity.split('/')[0])
 		}]
 
 	if isinstance(score, bool):
@@ -195,16 +195,18 @@ def main():
 		nameData = json.load(names)
 
 	#https://github.com/adlnet/xAPI-Dashboard/tree/master/generateData
+	#http://docs.learninglocker.net/postman/ big help
+	#https: // lrs.adlnet.gov / statementvalidator
 	battery = Battery()
-	battery.tests.append( Test('RubyOnRails', [random.randint(65,80) for i in range(50)]) )
-	# battery.tests.append( Test('DJango', [random.randint(65,80) for i in range(50)]) )
-	# battery.tests.append( Test('Phoenix', [random.randint(65,80) for i in range(50)]) )
-	# battery.tests.append( Test('xAPI', [random.randint(65,80) for i in range(50)]) )
-	# battery.tests.append( Test('ComputerScience', [random.randint(70,85) for i in range(50)]) )
+	#battery.tests.append( Test('RubyOnRails', [random.randint(65,80) for i in range(50)]) )
+	battery.tests.append( Test('DJango-301', [random.randint(65,80) for i in range(50)]) )
+	#battery.tests.append( Test('Phoenix-211', [random.randint(65,80) for i in range(50)]) )
+	#battery.tests.append( Test('xAPI-201', [random.randint(65,80) for i in range(50)]) )
+	#battery.tests.append( Test('ComputerScience-977', [random.randint(70,85) for i in range(50)]) )
 	#battery.tests.append( Test('test2', [50 for i in range(100)]) )
 
 	strongMindClass = Class(20, 75,20)
-	myclass = Class(2, 75,20)
+	myclass = Class(30, 75,20)
 
 	results = battery.run(myclass)
 	statements = genStatements(results)
@@ -223,8 +225,6 @@ def main():
 				outfile.write(stmtString)
 		except IndexError:
 			print stmtString
-	if '-h' in sys.argv:
-		print 'http://yetanalytics.github.io/xapi-schema-demo'
 	else:
 		print stmtString
 
