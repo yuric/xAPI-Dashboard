@@ -2,3 +2,20 @@
 test.html
 node_modules
 dist/math.js
+*.pyc
+*.log
+env
+build
+migrations
+runtests
+.coverage
+404.html
+500.html
+media/
+federated-analytics.js
+*.conf
+lrs/celery.py
+*.ini
+.idea/
+.DS_Store
+#find . -name .DS_Store -print0 | xargs -0 git rm -f --ignore-unmatch

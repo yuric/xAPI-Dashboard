@@ -119,7 +119,7 @@ def genStatements(results):
 
 	return xapiStatements
 
-			
+
 def genStatement(c, student, verb, activity, time, score=None):
 	stmt = {
 		'actor': {
@@ -133,7 +133,8 @@ def genStatement(c, student, verb, activity, time, score=None):
 		'object': {
 			'id': 'http://myschool.edu/xapi/{}/{}'.format(c.id,activity),
 			'definition': {
-				'name': activity
+				"type": "http://adlnet.gov/expapi/activities/assessment",
+        		"name": {"en-US": activity}
 			}
 		},
 		'context': {
@@ -174,7 +175,7 @@ def genStatement(c, student, verb, activity, time, score=None):
 				'max': 100
 			}
 		}
-	
+
 	return stmt
 
 
@@ -187,22 +188,23 @@ def main():
 		print '  -o <filename> - output to a file instead of the console'
 		print '  -p            - pack the JSON payload in a compressed javascript file'
 		return
-		
+
 	path = os.path.dirname(os.path.realpath(__file__))
 	with open(path+'/names.json','r') as names:
 		global nameData
 		nameData = json.load(names)
 
-
+	#https://github.com/adlnet/xAPI-Dashboard/tree/master/generateData
 	battery = Battery()
-	battery.tests.append( Test('test1', [random.randint(65,80) for i in range(50)]) )
-	battery.tests.append( Test('test2', [random.randint(65,80) for i in range(50)]) )
-	battery.tests.append( Test('test3', [random.randint(65,80) for i in range(50)]) )
-	battery.tests.append( Test('test4', [random.randint(65,80) for i in range(50)]) )
-	battery.tests.append( Test('final', [random.randint(70,85) for i in range(50)]) )
+	battery.tests.append( Test('RubyOnRails', [random.randint(65,80) for i in range(50)]) )
+	# battery.tests.append( Test('DJango', [random.randint(65,80) for i in range(50)]) )
+	# battery.tests.append( Test('Phoenix', [random.randint(65,80) for i in range(50)]) )
+	# battery.tests.append( Test('xAPI', [random.randint(65,80) for i in range(50)]) )
+	# battery.tests.append( Test('ComputerScience', [random.randint(70,85) for i in range(50)]) )
 	#battery.tests.append( Test('test2', [50 for i in range(100)]) )
 
-	myclass = Class(30, 75,20)
+	strongMindClass = Class(20, 75,20)
+	myclass = Class(2, 75,20)
 
 	results = battery.run(myclass)
 	statements = genStatements(results)
@@ -221,6 +223,8 @@ def main():
 				outfile.write(stmtString)
 		except IndexError:
 			print stmtString
+	if '-h' in sys.argv:
+		print 'http://yetanalytics.github.io/xapi-schema-demo'
 	else:
 		print stmtString
 
