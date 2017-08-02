@@ -1,5 +1,7 @@
 #!/bin/env python
 import subprocess, sys, os, random, json, math, datetime as dt
+import requests, json
+
 from uuid import uuid4
 from StringIO import StringIO
 
@@ -199,34 +201,80 @@ def main():
 	#https: // lrs.adlnet.gov / statementvalidator
 	battery = Battery()
 	#battery.tests.append( Test('RubyOnRails', [random.randint(65,80) for i in range(50)]) )
-	battery.tests.append( Test('DJango-301', [random.randint(65,80) for i in range(50)]) )
+	#battery.tests.append( Test('DJango-301', [random.randint(65,80) for i in range(50)]) )
 	#battery.tests.append( Test('Phoenix-211', [random.randint(65,80) for i in range(50)]) )
 	#battery.tests.append( Test('xAPI-201', [random.randint(65,80) for i in range(50)]) )
 	#battery.tests.append( Test('ComputerScience-977', [random.randint(70,85) for i in range(50)]) )
 	#battery.tests.append( Test('test2', [50 for i in range(100)]) )
-
-	strongMindClass = Class(20, 75,20)
-	myclass = Class(30, 75,20)
-
+	test_names=['Politics','Mathematics','Psycology','Neurobiology','Slacking-101']
+	url = 'https://lrs-staging.strongmind.com/xAPI/statements'
+	for course in test_names:
+		battery.tests.append( Test(course, [random.randint(65,80) for i in range(50)]) )
+	myclass = Class(random.randint(5,30), 75,20)#first numbner is class size range
 	results = battery.run(myclass)
 	statements = genStatements(results)
-	stmtString = json.dumps(statements, indent=4)
+	#exec_write(statements,sys.argv)
+	post_statement(statements,url)
 
-	if '-p' in sys.argv:
+	# for counter in range(1,n+1):
+    # 	sum = sum + counter
+
+	# strongMindClass = Class(20, 75,20)
+	# myclass = Class(2, 75,20)
+	# results = battery.run(myclass)
+	# statements = genStatements(results)
+	# stmtString = json.dumps(statements, indent=4)
+	# post_statement()
+
+
+	# if '-p' in sys.argv:
+	# 	p = subprocess.Popen(['node', path+'/compress.js'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path)
+	# 	stmtString, err = p.communicate(stmtString)
+	# 	if err != '':
+	# 		print 'Error', err
+	#
+	# if '-o' in sys.argv:
+	# 	i = sys.argv.index('-o')
+	# 	try:
+	# 		with open(sys.argv[i+1],'w') as outfile:
+	# 			outfile.write(stmtString)
+	# 	except IndexError:
+	# 		print stmtString
+	# else:
+	# 	print stmtString
+def exec_write (statements, argv):
+	stmtString = json.dumps(statements, indent=4)
+	if '-p' in argv:
 		p = subprocess.Popen(['node', path+'/compress.js'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=path)
 		stmtString, err = p.communicate(stmtString)
 		if err != '':
 			print 'Error', err
 
-	if '-o' in sys.argv:
-		i = sys.argv.index('-o')
+	if '-o' in argv:
+		i = argv.index('-o')
 		try:
-			with open(sys.argv[i+1],'w') as outfile:
+			with open(str(uuid4()),'w') as outfile:
 				outfile.write(stmtString)
 		except IndexError:
 			print stmtString
 	else:
 		print stmtString
-
+def post_statement(statements, url):
+	i=0
+	for statement in statements:#http://docs.python-requests.org/en/master/user/quickstart/
+		i += 1
+		total = len(statements)
+		#stmtString = json.dumps(statements, indent=4)
+		#payload = json.load(open("statement.json"))
+		payload = json.dumps(statement, indent=4)
+		headers = {'content-type': 'application/json', 'X-Experience-API-Version': '1.0.1', 'Authorization': 'Basic eXVyaS5jb3N0YTo5ODUyNjEyQEZsaXA='}
+		r = requests.post(url, data=payload, headers=headers)
+		if r.status_code != 200:
+			print r.status_code
+		else:
+			print(str(i)+"/"+str(total)+" - "+statement['object']['definition']['name']['en-US'])
+		# import ipdb
+		# ipdb.set_trace(context=11)
+		#print("["+i+"] "+r.status_code)
 if __name__ == '__main__':
 	main()
