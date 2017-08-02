@@ -206,11 +206,11 @@ def main():
 	#battery.tests.append( Test('xAPI-201', [random.randint(65,80) for i in range(50)]) )
 	#battery.tests.append( Test('ComputerScience-977', [random.randint(70,85) for i in range(50)]) )
 	#battery.tests.append( Test('test2', [50 for i in range(100)]) )
-	test_names=['Politics','Mathematics','Psycology','Neurobiology','Slacking-101']
+	test_names=['Politics','Mathematics','Psycology','Neurobiology','Slacking-101', 'Kinder', 'Mandarin', 'Eng', 'Futurism', 'Analysis', 'Boringness']
 	url = 'https://lrs-staging.strongmind.com/xAPI/statements'
 	for course in test_names:
-		battery.tests.append( Test(course, [random.randint(65,80) for i in range(50)]) )
-	myclass = Class(random.randint(5,30), 75,20)#first numbner is class size range
+		battery.tests.append( Test(course, [random.randint(10,90) for i in range(20)]) )
+	myclass = Class(random.randint(5,30), 75,90)#first numbner is class size range
 	results = battery.run(myclass)
 	statements = genStatements(results)
 	#exec_write(statements,sys.argv)
